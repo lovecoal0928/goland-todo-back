@@ -1,7 +1,14 @@
 package routes
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
+)
 
-func InitRoute(app *fiber.App) {
+type Repository struct {
+	DB *gorm.DB
+}
+
+func (r *Repository) InitRoute(app *fiber.App) {
 	v1Route(app)
 }

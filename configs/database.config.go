@@ -1,33 +1,29 @@
 package configs
 
 import (
-	"os"
+	"fmt"
 
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-var db_name = ""
-var db_user = "root"
-var db_passwd = ""
-var db_host = ""
-var db_port = ""
+type Config struct {
+	Host     string
+	Port     string
+	Password string
+	User     string
+	DBName   string
+	SSLMode  string
+}
 
-var DB *gorm.DB
-
-func bootDatabase() {
-	if dbNameEnv := os.Getenv("DB_NAME"); dbNameEnv != "" {
-		db_name = dbNameEnv
+func NewConnection(config *Config) (*gorm.DB, error) {
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=Asia/Tokyo",
+		config.Host, config.User, config.Password, config.DBName, config.Port, config.SSLMode,
+	)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return db, err
 	}
-	if dbUserEnv := os.Getenv("DB_USER"); dbUserEnv != "" {
-		db_user = dbUserEnv
-	}
-	if dbPassEnv := os.Getenv("DB_PASSWD"); dbPassEnv != "" {
-		db_passwd = dbPassEnv
-	}
-	if dbHostEnv := os.Getenv("DB_HOST"); dbHostEnv != "" {
-		db_host = dbHostEnv
-	}
-	if dbPortEnv := os.Getenv("DB_PORT"); dbPortEnv != "" {
-		db_port = dbPortEnv
-	}
+	return db, nil
 }
